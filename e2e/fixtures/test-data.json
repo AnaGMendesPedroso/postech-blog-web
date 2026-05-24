@@ -1,0 +1,25 @@
+{
+  "teacher": {
+    "email": "professor@postech.com",
+    "password": "senha123"
+  },
+  "invalidCredentials": {
+    "email": "inexistente@postech.com",
+    "password": "errada123"
+  },
+  "validPost": {
+    "titulo": "Post E2E Test",
+    "conteudo": "Conteúdo de teste para validação E2E. Este post é criado automaticamente durante a execução dos testes end-to-end.",
+    "autor": "Professor Teste",
+    "status": "published"
+  },
+  "invalidPost": {
+    "titulo": "",
+    "conteudo": "",
+    "autor": ""
+  },
+  "editedPost": {
+    "titulo": "Post E2E Editado",
+    "conteudo": "Conteúdo alterado durante teste de edição E2E."
+  }
+}

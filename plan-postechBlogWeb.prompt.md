@@ -186,6 +186,208 @@ src/
 
 ---
 
+## Progresso
+
+| Step | Descrição | Status | Resultado |
+|------|-----------|--------|-----------|
+| 1 | Setup do Projeto e Dependências | ✅ Concluído | Dependências instaladas, scripts configurados |
+| 2 | Configurar Stryker | ✅ Concluído | `stryker.config.mjs` criado |
+| 3 | Camada de Domínio (TDD/BDD) | ✅ Concluído | Entities, VOs, Repository interface |
+| 4 | Camada de Aplicação (Use Cases) | ✅ Concluído | 6 Use Cases + 2 DTOs — 56 testes, 100% stmts |
+| 5 | Shared Components e Estilização | ✅ Concluído | 8 módulos + test helper — 67 testes, 96.5% stmts |
+| 6 | Auth Domain (Entity + Use Cases + Presentation) | ✅ Concluído | User entity, Login/Logout use cases, LoginForm, LoginPage — 43 testes novos |
+| 7 | Home Page (Posts Presentation Layer) | ✅ Concluído | PostCard, PostList, SearchBar, usePosts hook, Home page — 43 testes novos |
+| 8 | Post Detail, Create, Edit, Admin Pages | ✅ Concluído | PostDetail, CreatePost, EditPost, Admin pages + PostForm, usePost, usePostForm hooks |
+| 9 | Roteamento (App.js) | ✅ Concluído | Rotas públicas e protegidas, NotFound page, App.test.js |
+| 10 | Validação de Qualidade (Mutação) | ✅ Concluído | 498 testes, domain 99%+, application 97%+, infra 90%+ mutation score |
+| 11 | Documentação | ✅ Concluído | README.md completo com arquitetura, setup, guia de uso, testes |
+
+### Detalhes da Execução — Step 5 (Shared Components e Estilização)
+
+**Arquivos criados:**
+```
+src/shared/
+├── components/
+│   ├── Header.js                  ✅
+│   ├── Header.test.js             ✅ (9 testes)
+│   ├── Footer.js                  ✅
+│   ├── Footer.test.js             ✅ (3 testes)
+│   ├── Pagination.js              ✅
+│   ├── Pagination.test.js         ✅ (13 testes)
+│   ├── PrivateRoute.js            ✅
+│   ├── PrivateRoute.test.js       ✅ (3 testes)
+│   ├── Loading.js                 ✅
+│   ├── Loading.test.js            ✅ (5 testes)
+│   ├── ErrorMessage.js            ✅
+│   └── ErrorMessage.test.js       ✅ (6 testes)
+├── contexts/
+│   ├── AuthContext.js             ✅
+│   └── AuthContext.test.js        ✅ (5 testes)
+├── test-utils.js                  ✅ (helper renderWithProviders + mockAuthRepository)
+└── utils/
+    ├── formatDate.js              ✅
+    ├── formatDate.test.js         ✅ (6 testes)
+    ├── truncateText.js            ✅
+    └── truncateText.test.js       ✅ (6 testes)
+```
+
+**Arquivos modificados:**
+- `package.json` — adicionado `moduleNameMapper` para react-router v7 com Jest
+- `src/setupTests.js` — adicionado polyfill `TextEncoder`/`TextDecoder` para react-router v7
+
+**Cobertura da camada shared (excluindo testes e helpers):**
+| Arquivo | Stmts | Branch | Funcs | Lines |
+|---------|-------|--------|-------|-------|
+| ErrorMessage.js | 100% | 100% | 100% | 100% |
+| Footer.js | 100% | 100% | 100% | 100% |
+| Header.js | 100% | 100% | 100% | 100% |
+| Loading.js | 100% | 66.66% | 100% | 100% |
+| Pagination.js | 100% | 100% | 100% | 100% |
+| PrivateRoute.js | 100% | 100% | 100% | 100% |
+| AuthContext.js | 100% | 100% | 100% | 100% |
+| formatDate.js | 87.5% | 100% | 100% | 83.33% |
+| truncateText.js | 100% | 100% | 100% | 100% |
+| **Total** | **96.5%** | **93.61%** | **96.05%** | **96.21%** |
+
+**Funcionalidades implementadas:**
+- `AuthContext` — Provider com repository injetado, hook `useAuth()` com guard
+- `Header` — Navegação sticky, links condicionais (login XOR admin+logout), styled-components
+- `Footer` — Footer semântico com ano dinâmico
+- `Pagination` — Lógica de janela (máx 5 visíveis), prev/next com disabled, aria-label
+- `PrivateRoute` — Proteção de rotas com `<Navigate>` declarativo
+- `Loading` — Spinner CSS puro com keyframes, 3 tamanhos (sm/md/lg), role="status"
+- `ErrorMessage` — role="alert", dismiss opcional, retorna null se vazio
+- `formatDate` — Intl.DateTimeFormat pt-BR, resiliente a inputs inválidos
+- `truncateText` — Truncamento com "...", default 150 chars, resiliente a null
+
+**Decisões técnicas:**
+- react-router-dom v7 necessita `moduleNameMapper` no Jest (package exports não suportadas pelo resolver)
+- react-router v7 necessita polyfill `TextEncoder`/`TextDecoder` no jsdom (setupTests.js)
+- Styled-components com props transient (`$size`, `$active`) para evitar passagem ao DOM
+- `test-utils.js` centraliza renderização com ThemeProvider + AuthProvider + MemoryRouter
+
+### Detalhes da Execução — Step 4 (Camada de Aplicação)
+
+**Arquivos criados:**
+```
+src/domains/posts/application/
+├── dto/
+│   ├── CreatePostDTO.js          ✅
+│   ├── CreatePostDTO.test.js     ✅ (3 testes)
+│   ├── UpdatePostDTO.js          ✅
+│   └── UpdatePostDTO.test.js     ✅ (6 testes)
+└── usecases/
+    ├── GetPost.js                ✅
+    ├── GetPost.test.js           ✅ (5 testes)
+    ├── DeletePost.js             ✅
+    ├── DeletePost.test.js        ✅ (4 testes)
+    ├── ListPosts.js              ✅
+    ├── ListPosts.test.js         ✅ (9 testes)
+    ├── SearchPosts.js            ✅
+    ├── SearchPosts.test.js       ✅ (8 testes)
+    ├── CreatePost.js             ✅
+    ├── CreatePost.test.js        ✅ (10 testes)
+    ├── UpdatePost.js             ✅
+    └── UpdatePost.test.js        ✅ (11 testes)
+```
+
+**Cobertura da camada de aplicação:**
+| Arquivo | Stmts | Branch | Funcs | Lines |
+|---------|-------|--------|-------|-------|
+| CreatePostDTO.js | 100% | 100% | 100% | 100% |
+| UpdatePostDTO.js | 100% | 100% | 100% | 100% |
+| CreatePost.js | 100% | 100% | 100% | 100% |
+| DeletePost.js | 100% | 80% | 100% | 100% |
+| GetPost.js | 100% | 85.71% | 100% | 100% |
+| ListPosts.js | 100% | 100% | 100% | 100% |
+| SearchPosts.js | 100% | 85.71% | 100% | 100% |
+| UpdatePost.js | 100% | 94.11% | 100% | 100% |
+| **Total** | **100%** | **93.22%** | **100%** | **100%** |
+
+### Detalhes da Execução — Step 6 (Auth Domain: Entity + Use Cases + Presentation)
+
+**Arquivos criados:**
+```
+src/domains/auth/
+├── domain/
+│   └── entities/
+│       ├── User.js               ✅
+│       └── User.test.js          ✅ (14 testes)
+├── application/
+│   └── usecases/
+│       ├── Login.js              ✅
+│       ├── Login.test.js         ✅ (10 testes)
+│       ├── Logout.js             ✅
+│       └── Logout.test.js        ✅ (3 testes)
+└── presentation/
+    ├── components/
+    │   ├── LoginForm.js          ✅
+    │   └── LoginForm.test.js     ✅ (11 testes)
+    └── pages/
+        ├── LoginPage.js          ✅
+        └── LoginPage.test.js     ✅ (5 testes)
+```
+
+**Decisões de implementação:**
+- `User` entity: Classe com `#private fields`, `Object.freeze`, validação de email via regex `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`, método `toJSON()`. Aceita campos extras sem erro (compatível com `AuthMockRepository` que retorna `role`).
+- `Login` use case: Valida email/password não vazios ANTES de chamar repositório. Transforma plain object retornado pelo repo → instância de `User` entity.
+- `Logout` use case: Delegação simples ao `authRepository.logout()`.
+- `LoginForm`: Componente puro (props-based). Não usa `useAuth` diretamente — recebe `onSubmit`, `error`, `loading` via props. Styled-components. Validação client-side com limpeza ao digitar.
+- `LoginPage`: Orquestra LoginForm + `useAuth` + `useNavigate`. Loading state local (não altera AuthContext). Redireciona se já autenticado.
+- Não foi criado `useAuth` separado em `presentation/hooks/` — reutilizado o existente em `src/shared/contexts/AuthContext.js`.
+- `AuthContext` NÃO foi alterado — loading gerenciado localmente na page.
+
+**Padrões seguidos:**
+- Entity: mesma estrutura de `Post` (private fields, freeze, toJSON, getters)
+- Use cases: mesma estrutura de `CreatePost` (constructor com repo, async execute)
+- Testes BDD: `describe('dado ...')` + `it('deve ...')` + Given/When/Then
+- Componentes: styled-components + data-testid fixos + role="alert" para acessibilidade
+- Testes de componente: `@testing-library/user-event` (não fireEvent)
+
+**Resultado total do projeto após Step 6:**
+- 31 test suites, 273 testes — todos passando ✅
+
+### Detalhes da Execução — Step 7 (Home Page: Posts Presentation Layer)
+
+**Arquivos criados:**
+```
+src/domains/posts/presentation/
+├── components/
+│   ├── PostCard.js               ✅
+│   ├── PostCard.test.js          ✅ (7 testes)
+│   ├── PostList.js               ✅
+│   ├── PostList.test.js          ✅ (4 testes)
+│   ├── SearchBar.js              ✅
+│   └── SearchBar.test.js         ✅ (7 testes)
+├── hooks/
+│   ├── usePosts.js               ✅
+│   └── usePosts.test.js          ✅ (12 testes)
+└── pages/
+    ├── Home.js                   ✅
+    └── Home.test.js              ✅ (10 testes — excl. 3 redundantes removidos)
+```
+
+**Decisões de implementação:**
+- `PostCard`: Usa `<Link>` do react-router-dom (acessibilidade + SEO). `<time datetime>` para datas. `truncateText(150)` + `formatDate` dos shared utils.
+- `PostList`: CSS Grid responsivo (1→2→3 colunas). Mensagem vazia se array vazio.
+- `SearchBar`: `type="search"` + `aria-label`. Botão "limpar" (×) condicional. `onClear` separado de `onSearch` (semântica).
+- `usePosts`: Hook com DI — recebe use cases por parâmetro. Estado `currentQuery` para distinguir listagem vs busca ao paginar.
+- `Home`: Composition root — instancia `PostApiRepository` → `ListPosts`/`SearchPosts` → `usePosts`. useEffect para carga inicial.
+- Testes da Home: `jest.mock` de `PostApiRepository` (pragmático para composition root).
+
+**Padrões seguidos:**
+- Componentes presentational (PostCard, PostList) sem side effects
+- Hook gerencia estado e orquestração de use cases
+- Page como composition root (instancia dependências)
+- Shared components reutilizados (Pagination, Loading, ErrorMessage)
+- BDD: `describe('dado/quando ...')` + `it('deve ...')`
+- `@testing-library/user-event` para interações
+
+**Resultado total do projeto após Step 7:**
+- 36 test suites, 316 testes — todos passando ✅
+
+---
+
 ## Steps
 
 ### 1. Setup do Projeto e Dependências
@@ -221,7 +423,7 @@ export default {
 };
 ```
 
-### 3. Implementar Camada de Domínio (TDD/BDD — testes primeiro)
+### 3. ✅ Implementar Camada de Domínio (TDD/BDD — testes primeiro)
 
 **Ciclo TDD para cada Value Object e Entity:**
 
@@ -261,7 +463,7 @@ Exemplo de sequência:
 - `PostStatus.test.js` → `PostStatus.js`
 - `Post.test.js` → `Post.js`
 
-### 4. Implementar Camada de Aplicação (Use Cases — TDD/BDD)
+### 4. ✅ Implementar Camada de Aplicação (Use Cases — TDD/BDD)
 
 Para cada use case:
 1. Escrever teste descrevendo o comportamento esperado (BDD)

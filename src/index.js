@@ -1,17 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import { AuthProvider } from './shared/contexts/AuthContext';
+import AuthApiRepository from './domains/auth/infrastructure/repositories/AuthApiRepository';
+import GlobalStyles from './shared/styles/GlobalStyles';
+import theme from './shared/styles/theme';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+const authRepository = new AuthApiRepository();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <AuthProvider authRepository={authRepository}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
