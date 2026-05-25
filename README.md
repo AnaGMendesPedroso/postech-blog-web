@@ -2,6 +2,50 @@
 
 Interface gráfica para a plataforma de blogging educacional da Pós-Tech FIAP.
 
+Uma versão enxuta do README: este ficheiro contém a descrição do projeto e os passos mínimos para rodar localmente. Conteúdo detalhado (arquitetura, testes, E2E, integração com a API, contribuição) foi movido para a pasta `docs/` para facilitar a leitura.
+
+Links rápidos
+
+- Índice da documentação: `docs/README.md`
+- Arquitetura e organização do código: `docs/ARCHITECTURE.md`
+- Setup & primeiro run: `docs/SETUP.md`
+- Testes (unitários, mutação, E2E): `docs/TESTING.md`
+- Testes E2E e script de setup: `docs/E2E.md`
+- Integração com a API (endpoints): `docs/API.md`
+- Como contribuir: `docs/CONTRIBUTING.md`
+
+
+## Descrição curta
+
+SPA em React com arquitetura DDD para gerenciamento de posts educacionais. Possui domínio `posts` e `auth`, testes unitários, testes de mutação (Stryker) e testes E2E (Playwright).
+
+## Pré-requisitos mínimos
+
+- Node.js >= 18
+- npm >= 9
+- (opcional) API backend rodando em `http://localhost:3000` para testar fluxos completos
+
+## Quickstart — rodando localmente pela primeira vez
+
+```bash
+# 1. Clonar
+git clone <repo-url>
+cd postech-blog-web
+
+# 2. Instalar dependências
+npm install
+
+# 3. Criar .env mínimo
+echo "REACT_APP_API_URL=http://localhost:3000" > .env
+
+# 4. Iniciar o dev server
+npm start
+```
+
+A aplicação ficará disponível em `http://localhost:3000` (dev). Para executar os testes E2E com o setup automatizado use `npm run test:e2e:setup` — mais detalhes em `docs/E2E.md`.
+
+---
+
 ## Descrição
 
 Aplicação front-end desenvolvida em React que oferece uma interface intuitiva e responsiva para docentes criarem, editarem e gerenciarem publicações educacionais, e para alunos(as) visualizarem, lerem e buscarem conteúdos de forma centralizada.
@@ -148,7 +192,7 @@ Page → Hook → Use Case → Repository (Interface) → PostApiRepository → 
 
 - **Node.js** ≥ 18.x
 - **npm** ≥ 9.x
-- **API Back-end** rodando em `http://localhost:3000` (para funcionalidade completa)
+- **API Back-end** rodando em `http://localhost:3000` (obrigatório para E2E e uso real)
 
 ## Setup e Instalação
 
@@ -167,13 +211,14 @@ echo "REACT_APP_API_URL=http://localhost:3000" > .env
 npm start
 ```
 
-A aplicação estará disponível em `http://localhost:3000` (ou `3001` se a porta estiver em uso).
+A aplicação estará disponível em `http://localhost:3001` (E2E) ou `http://localhost:3000` (desenvolvimento padrão).
 
 ## Variáveis de Ambiente
 
 | Variável | Default | Descrição |
 |----------|---------|-----------|
 | `REACT_APP_API_URL` | `http://localhost:3000` | URL base da API REST |
+| `PLAYWRIGHT_HEADED` | `false` | Define `true` para executar testes E2E com browser visível |
 
 ---
 
@@ -183,12 +228,16 @@ A aplicação estará disponível em `http://localhost:3000` (ou `3001` se a por
 |--------|---------|-----------|
 | `start` | `npm start` | Inicia o servidor de desenvolvimento |
 | `build` | `npm run build` | Gera build de produção otimizado |
-| `test` | `npm test` | Executa testes em modo watch |
-| `test:coverage` | `npm run test:coverage` | Executa testes com relatório de cobertura |
+| `test` | `npm test` | Executa testes unitários em modo watch |
+| `test:coverage` | `npm run test:coverage` | Executa testes com relatório de cobertura (mín. 80%) |
 | `test:mutation` | `npm run test:mutation` | Executa testes de mutação (Stryker) |
-| `test:e2e` | `npm run test:e2e` | Executa testes end-to-end (Playwright) |
-| `test:e2e:ui` | `npm run test:e2e:ui` | Abre Playwright UI mode |
-| `lint` | `npm run lint` | Executa ESLint sem warnings |
+| `test:e2e` | `npm run test:e2e` | Executa testes E2E headless (Playwright) |
+| `test:e2e:headed` | `npm run test:e2e:headed` | Executa testes E2E com browser visível |
+| `test:e2e:ui` | `npm run test:e2e:ui` | Abre Playwright UI mode (debug interativo) |
+| `test:e2e:setup` | `npm run test:e2e:setup` | Setup completo do ambiente E2E + executa os testes |
+| `test:e2e:setup:only` | `npm run test:e2e:setup:only` | Só prepara o ambiente E2E (sem executar os testes) |
+| `lint` | `npm run lint` | Executa ESLint (zero warnings permitidos) |
+| `lint:fix` | `npm run lint:fix` | Executa ESLint com correção automática |
 
 ---
 
@@ -234,7 +283,7 @@ A aplicação estará disponível em `http://localhost:3000` (ou `3001` se a por
 
 ### Testes Unitários (Jest + React Testing Library)
 
-- **581 testes** em 49 suites
+- **581 testes** em 49 suites — zero falhas, zero warnings de `act()`
 - Cobertura mínima: **80%** em statements, branches, functions e lines
 - Padrão BDD com `describe('dado X') > it('deve Y')`
 - Estrutura Given-When-Then com comentários explícitos
@@ -246,6 +295,14 @@ npm test
 # Executar com relatório de cobertura
 npm run test:coverage
 ```
+
+#### Qualidade dos Testes
+
+Os testes seguem as melhores práticas do Testing Library:
+- Sem acesso direto ao DOM (`no-node-access`) — uso de `getByRole`, `getByTestId` etc.
+- Múltiplas asserções em `waitFor` separadas em chamadas individuais (`no-wait-for-multiple-assertions`)
+- `render` nunca dentro de `beforeEach` (`no-render-in-setup`)
+- Sem wrappers `act()` desnecessários ao redor de utilitários do Testing Library
 
 ### Testes de Mutação (Stryker Mutator)
 
@@ -280,10 +337,33 @@ Testes end-to-end que validam os 6 requisitos funcionais da aplicação contra a
    - Senha: `senha123`
    > ⚠️ Em CI, substituir por variáveis de ambiente. Nunca usar credenciais de produção.
 
-3. **Node.js ≥ 18** e browsers do Playwright instalados:
-   ```bash
-   npx playwright install --with-deps
-   ```
+3. **Node.js ≥ 18** e browsers do Playwright instalados.
+
+#### Setup Automatizado (recomendado)
+
+O script `scripts/setup-e2e.sh` automatiza toda a preparação do ambiente:
+
+```bash
+# Verifica Node.js, instala dependências, cria .env,
+# instala browsers do Playwright e valida a API — tudo de uma vez:
+npm run test:e2e:setup
+
+# Apenas preparar o ambiente sem executar os testes:
+npm run test:e2e:setup:only
+
+# Preparar e executar com browser visível:
+bash scripts/setup-e2e.sh --headed
+```
+
+O script realiza 5 etapas em sequência:
+
+| Etapa | O que faz |
+|-------|-----------|
+| 1 — Node.js | Verifica versão ≥ 18 |
+| 2 — npm install | Instala dependências se `node_modules` não existir |
+| 3 — .env | Cria `.env` com `REACT_APP_API_URL` se necessário |
+| 4 — Playwright browsers | Instala Chromium + dependências do sistema |
+| 5 — API backend | Verifica se a API responde em `http://localhost:3000` |
 
 #### Executar os Testes E2E
 
@@ -291,21 +371,31 @@ Testes end-to-end que validam os 6 requisitos funcionais da aplicação contra a
 # 1. Subir a API (em outro terminal)
 cd ../postech-blog-api && npm start
 
-# 2. Executar testes E2E headless (React sobe automaticamente na porta 3001)
+# 2. Setup completo + executa os testes (headless)
+npm run test:e2e:setup
+
+# ── OU, se o ambiente já estiver configurado ──────────────────
+
+# Executar headless (padrão)
 npm run test:e2e
 
-# 3. Executar em modo headed (com janela do browser visível)
-npx playwright test --headed
+# Executar com browser visível
+npm run test:e2e:headed
 
-# 4. Abrir Playwright UI mode (debug interativo)
+# Abrir Playwright UI mode (debug interativo)
 npm run test:e2e:ui
 
-# 5. Executar apenas um arquivo
+# Executar apenas um arquivo
 npx playwright test e2e/tests/auth.spec.js
 
-# 6. Ver relatório HTML após execução
+# Ver relatório HTML após execução
 npx playwright show-report
 ```
+
+> **Modo headed via variável de ambiente:**
+> ```bash
+> PLAYWRIGHT_HEADED=true npx playwright test
+> ```
 
 #### Estrutura dos Testes E2E
 
@@ -346,7 +436,7 @@ e2e/
 #### Variáveis de Ambiente para CI
 
 ```bash
-# .env.test (não commitar — adicionar ao .gitignore)
+# .env (não commitar — adicionar ao .gitignore)
 REACT_APP_API_URL=http://localhost:3000
 ```
 
@@ -440,6 +530,8 @@ O `httpClient.js` centraliza:
 | **Stryker excluindo Presentation** | Styled-components geram mutantes CSS sem valor; E2E cobre UI |
 | **Cobertura 80% / Mutação 90%** | Pragmático: cobertura alta sem ser cargo cult |
 | **BDD em português** | Testes legíveis como documentação viva |
+| **`PLAYWRIGHT_HEADED` env var** | Controla modo headless/headed sem flag CLI; compatível com npm scripts e CI |
+| **`scripts/setup-e2e.sh`** | Script idempotente que automatiza todo o setup do ambiente E2E em 5 etapas |
 
 ---
 
@@ -468,9 +560,9 @@ describe('NomeDoMódulo', () => {
 ### Checklist para PRs
 
 - [ ] Testes escritos antes da implementação (TDD)
-- [ ] `npm test` passa sem erros
+- [ ] `npm test` passa sem erros e sem warnings de `act()`
 - [ ] `npm run test:coverage` acima de 80% em todas as métricas
-- [ ] `npm run lint` sem warnings
+- [ ] `npm run lint` sem warnings (zero tolerância)
 - [ ] Componentes interativos possuem `data-testid`
 - [ ] Nomes descritivos (functions, variables, files)
 - [ ] Sem `console.log` em código de produção
