@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { AuthProvider } from './shared/contexts/AuthContext';
@@ -41,13 +41,15 @@ function renderApp(route = '/', { authenticated = false } = {}) {
 
 describe('App Routing', () => {
   describe('Layout global', () => {
-    it('deve renderizar o Header em qualquer rota', () => {
-      renderApp('/');
+    it('deve renderizar o Header em qualquer rota', async () => {
+      // eslint-disable-next-line testing-library/no-unnecessary-act
+      await act(async () => { renderApp('/'); });
       expect(screen.getByTestId('header-nav')).toBeInTheDocument();
     });
 
-    it('deve renderizar o Footer em qualquer rota', () => {
-      renderApp('/');
+    it('deve renderizar o Footer em qualquer rota', async () => {
+      // eslint-disable-next-line testing-library/no-unnecessary-act
+      await act(async () => { renderApp('/'); });
       expect(screen.getByTestId('footer-container')).toBeInTheDocument();
     });
 
@@ -64,15 +66,17 @@ describe('App Routing', () => {
 
   describe('Rotas públicas', () => {
     describe('dado que o usuário acessa /', () => {
-      it('deve renderizar a Home page', () => {
-        renderApp('/');
+      it('deve renderizar a Home page', async () => {
+        // eslint-disable-next-line testing-library/no-unnecessary-act
+        await act(async () => { renderApp('/'); });
         expect(screen.getByTestId('home-page')).toBeInTheDocument();
       });
     });
 
     describe('dado que o usuário acessa /posts/:id', () => {
-      it('deve renderizar a PostDetail page', () => {
-        renderApp('/posts/abc-123');
+      it('deve renderizar a PostDetail page', async () => {
+        // eslint-disable-next-line testing-library/no-unnecessary-act
+        await act(async () => { renderApp('/posts/abc-123'); });
         expect(screen.getByTestId('post-detail-page')).toBeInTheDocument();
       });
     });
@@ -111,8 +115,9 @@ describe('App Routing', () => {
 
   describe('Rotas protegidas — usuário autenticado', () => {
     describe('dado que o usuário autenticado acessa /admin', () => {
-      it('deve renderizar a Admin page', () => {
-        renderApp('/admin', { authenticated: true });
+      it('deve renderizar a Admin page', async () => {
+        // eslint-disable-next-line testing-library/no-unnecessary-act
+        await act(async () => { renderApp('/admin', { authenticated: true }); });
         expect(screen.getByTestId('admin-page')).toBeInTheDocument();
       });
     });
@@ -125,8 +130,9 @@ describe('App Routing', () => {
     });
 
     describe('dado que o usuário autenticado acessa /admin/posts/:id/edit', () => {
-      it('deve renderizar a EditPost page', () => {
-        renderApp('/admin/posts/xyz/edit', { authenticated: true });
+      it('deve renderizar a EditPost page', async () => {
+        // eslint-disable-next-line testing-library/no-unnecessary-act
+        await act(async () => { renderApp('/admin/posts/xyz/edit', { authenticated: true }); });
         expect(screen.getByTestId('edit-post-page')).toBeInTheDocument();
       });
     });

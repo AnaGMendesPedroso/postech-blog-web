@@ -45,6 +45,8 @@ describe('LoginPage', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('/admin');
       });
+      // wait for setUser to fire and page to show the authenticated redirect
+      await screen.findByTestId('navigate-mock');
     });
 
     it('deve exibir loading state durante a requisição', async () => {
@@ -66,8 +68,9 @@ describe('LoginPage', () => {
       expect(screen.getByTestId('login-btn-submit')).toHaveTextContent('Entrando...');
       expect(screen.getByTestId('login-btn-submit')).toBeDisabled();
 
-      // Cleanup
+      // Cleanup — resolve the pending promise and wait for state to settle
       resolveLogin({ user: { id: '1', name: 'Test', email: 'test@test.com' }, token: 'tok' });
+      await screen.findByTestId('navigate-mock');
     });
   });
 

@@ -17,10 +17,14 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint src/ --max-warnings=0",
+    "lint:fix": "eslint src/ --fix",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:mutation": "stryker run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "PLAYWRIGHT_HEADED=true playwright test",
+    "test:e2e:setup": "bash scripts/setup-e2e.sh",
+    "test:e2e:setup:only": "bash scripts/setup-e2e.sh --only-setup",
     "eject": "react-scripts eject"
   },
   "jest": {

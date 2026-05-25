@@ -42,7 +42,7 @@ describe('PostCard', () => {
     it('deve ter link que navegaria para /posts/{id}', () => {
       renderWithProviders(<PostCard {...mockPost} />);
 
-      const link = screen.getByTestId('post-card-1').closest('a');
+      const link = screen.getByRole('link');
       expect(link).toHaveAttribute('href', '/posts/1');
     });
   });

@@ -56,9 +56,9 @@ describe('usePosts', () => {
       // Then
       await waitFor(() => {
         expect(result.current.posts).toHaveLength(2);
-        expect(result.current.pagination.totalPages).toBe(1);
-        expect(result.current.pagination.page).toBe(1);
       });
+      expect(result.current.pagination.totalPages).toBe(1);
+      expect(result.current.pagination.page).toBe(1);
     });
 
     it('deve chamar listPostsUseCase com status=published', async () => {
@@ -190,8 +190,8 @@ describe('usePosts', () => {
       // Then
       await waitFor(() => {
         expect(result.current.posts).toHaveLength(1);
-        expect(result.current.posts[0].titulo).toBe('React Post');
       });
+      expect(result.current.posts[0].titulo).toBe('React Post');
     });
 
     it('deve setar loading durante a operação', async () => {

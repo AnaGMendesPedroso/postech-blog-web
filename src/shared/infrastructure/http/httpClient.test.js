@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 jest.mock('axios', () => {
   const handlers = {
     request: [],

@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../../../shared/test-utils';
 import Home from './Home';
@@ -98,7 +98,7 @@ describe('Home Page', () => {
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
 
       // Cleanup
-      resolveFind(mockPaginatedResponse);
+      await act(async () => { resolveFind(mockPaginatedResponse); });
       await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument());
     });
   });
@@ -185,7 +185,7 @@ describe('Home Page', () => {
       // Do a search first
       await user.type(screen.getByTestId('search-input'), 'react');
       await user.click(screen.getByTestId('search-btn-submit'));
-      await waitFor(() => expect(screen.getByTestId('post-card-1')).toBeInTheDocument());
+      await screen.findByTestId('post-card-1');
 
       // When - clear
       await user.click(screen.getByTestId('search-btn-clear'));

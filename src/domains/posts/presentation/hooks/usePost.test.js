@@ -48,10 +48,10 @@ describe('usePost', () => {
       // When & Then
       await waitFor(() => {
         expect(result.current.post).not.toBeNull();
-        expect(result.current.post.titulo).toBe('Post de Teste');
-        expect(result.current.post.conteudo).toBe('Conteúdo completo do post de teste');
-        expect(result.current.post.autor).toBe('Professor A');
       });
+      expect(result.current.post.titulo).toBe('Post de Teste');
+      expect(result.current.post.conteudo).toBe('Conteúdo completo do post de teste');
+      expect(result.current.post.autor).toBe('Professor A');
     });
 
     it('deve chamar getPostUseCase.execute com { id }', async () => {
@@ -62,8 +62,8 @@ describe('usePost', () => {
       // Then
       await waitFor(() => {
         expect(getPostUseCase.execute).toHaveBeenCalledWith({ id: 'abc-123' });
-        expect(getPostUseCase.execute).toHaveBeenCalledTimes(1);
       });
+      expect(getPostUseCase.execute).toHaveBeenCalledTimes(1);
     });
 
     it('deve setar error=null após sucesso', async () => {
@@ -73,9 +73,9 @@ describe('usePost', () => {
 
       // Then
       await waitFor(() => {
-        expect(result.current.error).toBeNull();
         expect(result.current.post).not.toBeNull();
       });
+      expect(result.current.error).toBeNull();
     });
   });
 
@@ -222,8 +222,8 @@ describe('usePost', () => {
       // Then
       await waitFor(() => {
         expect(getPostUseCase.execute).toHaveBeenCalledWith({ id: '2' });
-        expect(getPostUseCase.execute).toHaveBeenCalledTimes(2);
       });
+      expect(getPostUseCase.execute).toHaveBeenCalledTimes(2);
     });
 
     it('deve resetar o estado antes da nova busca', async () => {

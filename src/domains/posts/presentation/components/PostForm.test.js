@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../../../shared/test-utils';
 import PostForm from './PostForm';
@@ -190,7 +190,7 @@ describe('PostForm', () => {
         });
 
         // Cleanup
-        await resolveSubmit();
+        await act(async () => { resolveSubmit(); });
       });
 
       it('deve exibir texto "Enviando..." no botão', async () => {
@@ -209,7 +209,7 @@ describe('PostForm', () => {
         });
 
         // Cleanup
-        await resolveSubmit();
+        await act(async () => { resolveSubmit(); });
       });
     });
   });
@@ -270,7 +270,11 @@ describe('PostForm', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('form-input-titulo')).toHaveAttribute('aria-invalid', 'true');
+      });
+      await waitFor(() => {
         expect(screen.getByTestId('form-input-conteudo')).toHaveAttribute('aria-invalid', 'true');
+      });
+      await waitFor(() => {
         expect(screen.getByTestId('form-input-autor')).toHaveAttribute('aria-invalid', 'true');
       });
     });

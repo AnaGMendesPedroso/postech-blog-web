@@ -7,7 +7,7 @@ module.exports = defineConfig({
   workers: 1,
   use: {
     baseURL: 'http://localhost:3001',
-    headless: true,
+    headless: process.env.PLAYWRIGHT_HEADED !== 'true',
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
   },
